@@ -1,5 +1,5 @@
 # K-Sonic
-Based on Sonic (speed , pitch and rate) , the demo for Android
+Based on Sonic (speed , pitch and rate) , the demo for [Android](https://raw.githubusercontent.com/jcodeing/K-Sonic/master/K-Sonic-demo.apk)
 
 ![](https://raw.githubusercontent.com/jcodeing/K-Sonic/master/lookme.jpg)
 
@@ -9,7 +9,6 @@ Introduction
 	该Demo支持音频打开方式后直接可进行相关音频参数的调节,
 	或者手动选择本地音频,或者直接播放本Demo内置音频,
 	想要播放在线音频可手动修改源码音频Uri
-	[Download K-Sonic Demo](https://raw.githubusercontent.com/jcodeing/K-Sonic/master/K-Sonic-demo.apk)
 Features
 ========
     该Demo支持两种媒体引擎,都支持音频的变速功能.
