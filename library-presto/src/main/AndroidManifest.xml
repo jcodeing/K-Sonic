@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.aocate.prestoclient">
+
+    <application android:allowBackup="true">
+
+        <!--    <service
+                android:name="com.prestissimo.SoundService"
+                android:exported="true"
+                tools:ignore="ExportedService">
+                <intent-filter>
+                    <action android:name="com.aocate.intent.PLAY_AUDIO_ADJUST_SPEED_0_8" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                </intent-filter>
+        </service>-->
+        <service android:name="com.prestissimo.SoundService">
+            <intent-filter>
+                <action android:name="com.aocate.intent.PLAY_AUDIO_ADJUST_SPEED_0_8" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

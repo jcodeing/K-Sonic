@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">K-Sonic</string>
+    <string name="action_settings">Jcodeing</string>
+
+    <!--Settings-->
+    <string name="pref_key_media_engine">pref_media_engine</string>
+    <string name="pref_key_last_directory">pref_last_directory</string>
+    <string name="pref_key_last_file">pref_last_file</string>
+    <string name="pref_key_sonic_speed">pref_sonic_speed</string>
+    <string name="pref_key_sonic_pitch">pref_sonic_pitch</string>
+    <string name="pref_key_sonic_rate">pref_sonic_rate</string>
+
+    <!--Media Engine-->
+    <string name="media_engine_exo">ExoMP</string>
+    <string name="media_engine_presto">PrestoMP</string>
+
+    <!--layout-->
+    <string name="hint_audio_path">Select audio path \nor direct play demo …</string>
+    <string name="text_switch_engine">Switch-Engine</string>
+    <string name="text_speed">Speed</string>
+    <string name="text_pitch">Pitch</string>
+    <string name="text_rate">Rate</string>
+</resources>
