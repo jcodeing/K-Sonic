@@ -1,24 +1,26 @@
-//MIT License
-//
-//Copyright (c) 2016 Jcodeing <jcodeing@gmail.com>
-//
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-//
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-//
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 K Sun <jcodeing@gmail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.jcodeing.k_sonic;
 
@@ -43,22 +45,18 @@ import java.util.TimerTask;
 
 public class PlusMinusNum extends LinearLayout {
 
-    private LinearLayout mainLinearLayout;
-    private LinearLayout leftLinearLayout;
-    private LinearLayout centerLinearLayout;
-    private LinearLayout rightLinearLayout;
-
+    // =========@View@=========
     private Button plusButton;
     private Button minusButton;
     private EditText editText;
+    private LinearLayout centerLL;
 
-    private int editTextLayoutWidth;
-    private int editTextLayoutHeight;
-    private int editTextMinimumWidth;
-    private int editTextMinimumHeight;
-    private int editTextMinHeight;
-    private int editTextHeight;
+    // =========@Config@=========
+    private String plusButtonText = "－";//"-"
+    private String minusButtonText = "＋";//"+"
 
+    private int buttonWidth;
+    private int ediTextMinimumWidth;
     // =========@Value@=========float/int
     public float minimumNumValue;
     public float maximumNumValue;
@@ -67,152 +65,92 @@ public class PlusMinusNum extends LinearLayout {
     private OnNumChangeListener onNumChangeListener;
 
     // ------------------------------K------------------------------@Construction
+    public PlusMinusNum(Context context) {
+        this(context, null);
+    }
+
     public PlusMinusNum(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
+    }
+
+    public PlusMinusNum(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         //layout xmlns:app="http://schemas.android.com/apk/res-auto"
         //values attrs declare-styleable
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PlusMinusNum);
         minimumNumValue = typedArray.getFloat(R.styleable.PlusMinusNum_minimumNumValue, 0.1f);
         maximumNumValue = typedArray.getFloat(R.styleable.PlusMinusNum_maximumNumValue, 2.0f);
         num = typedArray.getFloat(R.styleable.PlusMinusNum_numValue, 1.0f);
-        typedArray.recycle();
-        initialize();
-    }
 
-    public PlusMinusNum(Context context) {
-        super(context);
+        buttonWidth = typedArray.getLayoutDimension(R.styleable.PlusMinusNum_buttonWidth, dpToPx(38f));//getResources().getDimension(R.dimen.buttonWidthDefault)
+        ediTextMinimumWidth = typedArray.getLayoutDimension(R.styleable.PlusMinusNum_ediTextMinimumWidth, dpToPx(45f));
+        typedArray.recycle();
+
         initialize();
     }
 
     // ------------------------------K------------------------------@Initialize
     private void initialize() {
-        initETWithHeight();
         initView();
-        setViewsLayoutParams();
         addAllView();
         setViewListener();
     }
 
-    private void initETWithHeight() {
-        editTextLayoutWidth = -1;
-        editTextLayoutHeight = -1;
-        editTextMinimumWidth = -1;
-        editTextMinimumHeight = -1;
-        editTextMinHeight = -1;
-        editTextHeight = -1;
-    }
-
     private void initView() {
-        mainLinearLayout = new LinearLayout(getContext());
-        leftLinearLayout = new LinearLayout(getContext());
-        centerLinearLayout = new LinearLayout(getContext());
-        rightLinearLayout = new LinearLayout(getContext());
-        plusButton = new Button(getContext());
-        minusButton = new Button(getContext());
+        setOrientation(LinearLayout.HORIZONTAL);
+
+        // =========@center Layout
+        centerLL = new LinearLayout(getContext());
         editText = new EditText(getContext());
-
-        minusButton.setText("-");
-        minusButton.setTextColor(0xff666666);
-        minusButton.setTextScaleX(3f);
-        minusButton.setTag("-");
-        minusButton.setBackgroundResource(R.drawable.num_minus);
-        minusButton.setPadding(0, 0, 0, 0);
-
-        plusButton.setText("+");
-        plusButton.setTextColor(0xff666666);
-        // plusButton.setTextScaleX(1f);
-        plusButton.setTag("+");
-        plusButton.setBackgroundResource(R.drawable.num_plus);
-        plusButton.setPadding(0, 0, 0, 0);
-
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);//TYPE_NULL
         editText.setText(String.valueOf(num));
         editText.setTextColor(0xff229EBF);
         editText.setBackgroundResource(R.drawable.num_edit);
         editText.setPadding(0, 0, 0, 0);
         editText.setGravity(Gravity.CENTER);
-    }
-
-    private void setViewsLayoutParams() {
-        LayoutParams viewLayoutParams = new LayoutParams(
+        editText.setMinimumWidth(ediTextMinimumWidth);
+        LayoutParams ediTextLP = new LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
+        editText.setLayoutParams(ediTextLP);
 
-        plusButton.setLayoutParams(viewLayoutParams);
-        minusButton.setLayoutParams(viewLayoutParams);
-        editText.setLayoutParams(viewLayoutParams);
-        setETWidthHeight();
+        LayoutParams centerLP = new LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        centerLP.gravity = Gravity.CENTER;
+        centerLL.setLayoutParams(centerLP);
+        centerLL.setFocusable(true);
+        centerLL.setFocusableInTouchMode(true);
 
-        // plusButton.setPadding(0, 0, 0, 0);
-        // minusButton.setPadding(0, 0, 0, 0);
-        // editText.setPadding(0, 0, 0, 0);
 
-        viewLayoutParams.gravity = Gravity.CENTER;
-        centerLinearLayout.setLayoutParams(viewLayoutParams);
+        // =========@left/right Layout
+        minusButton = new Button(getContext());
+        minusButton.setText(minusButtonText);
+        minusButton.setTextColor(0xff666666);
+        minusButton.setTag(minusButtonText);
+        minusButton.setBackgroundResource(R.drawable.num_minus);
+        minusButton.setPadding(0, 0, 0, 0);
 
-        centerLinearLayout.setFocusable(true);
-        centerLinearLayout.setFocusableInTouchMode(true);
+        plusButton = new Button(getContext());
+        plusButton.setText(plusButtonText);
+        plusButton.setTextColor(0xff666666);
+        plusButton.setTag(plusButtonText);
+        plusButton.setBackgroundResource(R.drawable.num_plus);
+        plusButton.setPadding(0, 0, 0, 0);
 
-        viewLayoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        viewLayoutParams.weight = 1.0f;
-        leftLinearLayout.setLayoutParams(viewLayoutParams);
-        rightLinearLayout.setLayoutParams(viewLayoutParams);
-
-        viewLayoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        mainLinearLayout.setLayoutParams(viewLayoutParams);
-        mainLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-    }
-
-    private void setETWidthHeight() {
-        // =========@setMinimumWidth Height@=========
-        if (editTextMinimumWidth < 0) {
-            editTextMinimumWidth = dpToPx(65f);
-        }
-        editText.setMinimumWidth(editTextMinimumWidth);
-
-        if (editTextHeight > 0) {
-            if (editTextMinHeight >= 0 && editTextMinHeight > editTextHeight) {
-                editTextHeight = editTextMinHeight;
-            }
-            editText.setHeight(editTextHeight);
-        }
-
-        // =========@setLayoutParams@=========
-        if (editTextLayoutHeight > 0) {
-            if (editTextMinimumHeight > 0
-                    && editTextMinimumHeight > editTextLayoutHeight) {
-                editTextLayoutHeight = editTextMinimumHeight;
-            }
-
-            LayoutParams layoutParams = (LayoutParams) editText
-                    .getLayoutParams();
-            layoutParams.height = editTextLayoutHeight;
-            editText.setLayoutParams(layoutParams);
-        }
-
-        if (editTextLayoutWidth > 0) {
-            if (editTextMinimumWidth > 0
-                    && editTextMinimumWidth > editTextLayoutWidth) {
-                editTextLayoutWidth = editTextMinimumWidth;
-            }
-
-            LayoutParams layoutParams = (LayoutParams) editText
-                    .getLayoutParams();
-            layoutParams.width = editTextLayoutWidth;
-            editText.setLayoutParams(layoutParams);
-        }
+        LayoutParams buttonLP = new LayoutParams(
+                buttonWidth,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        plusButton.setLayoutParams(buttonLP);
+        minusButton.setLayoutParams(buttonLP);
     }
 
     private void addAllView() {
-        mainLinearLayout.addView(leftLinearLayout, 0);
-        mainLinearLayout.addView(centerLinearLayout, 1);
-        mainLinearLayout.addView(rightLinearLayout, 2);
+        centerLL.addView(editText);
 
-        leftLinearLayout.addView(minusButton);
-        centerLinearLayout.addView(editText);
-        rightLinearLayout.addView(plusButton);
-
-        addView(mainLinearLayout);
+        addView(minusButton, 0);
+        addView(centerLL, 1);
+        addView(plusButton, 2);
     }
 
     private void setViewListener() {
@@ -242,6 +180,10 @@ public class PlusMinusNum extends LinearLayout {
 
 
     // ------------------------------K------------------------------@Set/Get
+    public EditText getEditText() {
+        return editText;
+    }
+
     public void setText(CharSequence text) {
         editText.setText(text);
     }
@@ -259,41 +201,12 @@ public class PlusMinusNum extends LinearLayout {
         }
     }
 
-    public void setEditTextMinimumWidth(int editTextMinimumWidth) {
-        if (editTextMinimumWidth > 0) {
-            this.editTextMinimumWidth = editTextMinimumWidth;
-            editText.setMinimumWidth(editTextMinimumWidth);
+    public void setEdiTextMinimumWidth(int ediTextMinimumWidth) {
+        if (ediTextMinimumWidth > 0) {
+            this.ediTextMinimumWidth = ediTextMinimumWidth;
+            editText.setMinimumWidth(ediTextMinimumWidth);
         }
 
-    }
-
-    public void setEditTextMinimumHeight(int editTextMinimumHeight) {
-        if (editTextMinimumHeight > 0) {
-            this.editTextMinimumHeight = editTextMinimumHeight;
-            editText.setMinimumHeight(editTextMinimumHeight);
-        }
-    }
-
-    public void setEditTextMinHeight(int editTextMinHeight) {
-        if (editTextMinHeight > 0) {
-            this.editTextMinHeight = editTextMinHeight;
-            editText.setMinHeight(editTextMinHeight);
-        }
-    }
-
-    public void setEditTextHeight(int editTextHeight) {
-        this.editTextHeight = editTextHeight;
-        setETWidthHeight();
-    }
-
-    public void setEditTextLayoutWidth(int editTextLayoutWidth) {
-        this.editTextLayoutWidth = editTextLayoutWidth;
-        setETWidthHeight();
-    }
-
-    public void setEditTextLayoutHeight(int editTextLayoutHeight) {
-        this.editTextLayoutHeight = editTextLayoutHeight;
-        setETWidthHeight();
     }
 
     public void setButtonBgColor(int addBtnColor, int subBtnColor) {
@@ -319,7 +232,6 @@ public class PlusMinusNum extends LinearLayout {
 
 
     // ------------------------------K------------------------------@Calculate
-
     private void plusMinusNumber(View v) {
         String numString = editText.getText().toString();
         if (TextUtils.isEmpty(numString)) {
@@ -332,12 +244,10 @@ public class PlusMinusNum extends LinearLayout {
             //default: float+0.1/float-0.1 | int+1/int-1
             //Later expansion: custom difference
             //Be careful: float+0.1/float-0.1 decimal precision problem
-            if (v.getTag().equals("+")) {
+            if (v.getTag().equals(plusButtonText)) {
                 // The maximum value judgment
                 if ((num * 10 + 1) / 10 > maximumNumValue) {//int: (++num > maximumNumValue)
-                    Toast.makeText(getContext(),
-                            "! > maximum(" + maximumNumValue + ")",
-                            Toast.LENGTH_SHORT).show();
+                    showToast("! > maximum(" + maximumNumValue + ")");
                 } else {
                     num = (num * 10 + 1) / 10;
                     editText.setText(String.valueOf(num));
@@ -346,12 +256,10 @@ public class PlusMinusNum extends LinearLayout {
                         onNumChangeListener.onNumChange(PlusMinusNum.this, num);
                     }
                 }
-            } else if (v.getTag().equals("-")) {
+            } else if (v.getTag().equals(minusButtonText)) {
                 // The minimum value judgment
                 if ((num * 10 - 1) / 10 < minimumNumValue) {//int: (--num < minimumNumValue)
-                    Toast.makeText(getContext(),
-                            "! < minimum(" + minimumNumValue + ")",
-                            Toast.LENGTH_SHORT).show();
+                    showToast("! < minimum(" + minimumNumValue + ")");
                 } else {
                     num = (num * 10 - 1) / 10;
                     editText.setText(String.valueOf(num));
@@ -374,13 +282,9 @@ public class PlusMinusNum extends LinearLayout {
                 try {
                     float numI = Float.parseFloat(numString);
                     if (numI < minimumNumValue) {
-                        Toast.makeText(getContext(),
-                                "! < minimum(" + minimumNumValue + ")",
-                                Toast.LENGTH_SHORT).show();
+                        showToast("! < minimum(" + minimumNumValue + ")");
                     } else if (numI > maximumNumValue) {
-                        Toast.makeText(getContext(),
-                                "! > maximum(" + maximumNumValue + ")",
-                                Toast.LENGTH_SHORT).show();
+                        showToast("! > maximum(" + maximumNumValue + ")");
                     } else {
                         editText.setSelection(editText.getText().toString()
                                 .length());
@@ -393,7 +297,7 @@ public class PlusMinusNum extends LinearLayout {
                     }
                 } catch (Exception e) {//NumberFormat
                     //illegal input
-                    Toast.makeText(getContext(), "! illegal input", Toast.LENGTH_SHORT).show();
+                    showToast("! illegal input");
                     setText("");
                 }
             }
@@ -482,5 +386,16 @@ public class PlusMinusNum extends LinearLayout {
     // ------------------------------K------------------------------@Assist
     public int dpToPx(float dp) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics()));
+    }
+
+    private Toast toast;
+
+    private void showToast(String str) {
+        if (toast != null) {
+            toast.cancel();
+            toast = null;
+        }
+        toast = Toast.makeText(getContext(), str, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

@@ -80,7 +80,7 @@
 
         <com.jcodeing.k_sonic.PlusMinusNum
             android:id="@+id/pmn_speed"
-            android:layout_width="125dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
@@ -107,7 +107,7 @@
 
         <com.jcodeing.k_sonic.PlusMinusNum
             android:id="@+id/pmn_pitch"
-            android:layout_width="125dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
@@ -133,11 +133,13 @@
 
         <com.jcodeing.k_sonic.PlusMinusNum
             android:id="@+id/pmn_rate"
-            android:layout_width="125dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            app:buttonWidth="38dp"
+            app:ediTextMinimumWidth="45dp" />
 
     </RelativeLayout>
 
