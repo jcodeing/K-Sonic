@@ -1,7 +1,7 @@
 # K-Sonic
-Based on Sonic (speed , pitch and rate) , the demo for Android
+Based on Sonic (speed , pitch and rate) , the demo for [Android](https://raw.githubusercontent.com/jcodeing/K-Sonic/master/K-Sonic-demo.apk)
 
-![](https://raw.githubusercontent.com/jcodeing/K-Sonic/master/lookme.gif)
+![](https://raw.githubusercontent.com/jcodeing/K-Sonic/master/lookme.jpg)
 
 Introduction
 ============
