@@ -42,7 +42,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PlusMinusNum extends LinearLayout {
-    private Context context;
 
     private LinearLayout mainLinearLayout;
     private LinearLayout leftLinearLayout;
@@ -77,18 +76,16 @@ public class PlusMinusNum extends LinearLayout {
         maximumNumValue = typedArray.getFloat(R.styleable.PlusMinusNum_maximumNumValue, 2.0f);
         num = typedArray.getFloat(R.styleable.PlusMinusNum_numValue, 1.0f);
         typedArray.recycle();
-        initialize(context);
+        initialize();
     }
 
     public PlusMinusNum(Context context) {
         super(context);
-        initialize(context);
+        initialize();
     }
 
     // ------------------------------K------------------------------@Initialize
-    private void initialize(Context context) {
-        this.context = context;
-
+    private void initialize() {
         initETWithHeight();
         initView();
         setViewsLayoutParams();
@@ -106,13 +103,13 @@ public class PlusMinusNum extends LinearLayout {
     }
 
     private void initView() {
-        mainLinearLayout = new LinearLayout(context);
-        leftLinearLayout = new LinearLayout(context);
-        centerLinearLayout = new LinearLayout(context);
-        rightLinearLayout = new LinearLayout(context);
-        plusButton = new Button(context);
-        minusButton = new Button(context);
-        editText = new EditText(context);
+        mainLinearLayout = new LinearLayout(getContext());
+        leftLinearLayout = new LinearLayout(getContext());
+        centerLinearLayout = new LinearLayout(getContext());
+        rightLinearLayout = new LinearLayout(getContext());
+        plusButton = new Button(getContext());
+        minusButton = new Button(getContext());
+        editText = new EditText(getContext());
 
         minusButton.setText("-");
         minusButton.setTextColor(0xff666666);
@@ -167,13 +164,9 @@ public class PlusMinusNum extends LinearLayout {
     }
 
     private void setETWidthHeight() {
-        float fPx;
-
         // =========@setMinimumWidth Height@=========
         if (editTextMinimumWidth < 0) {
-            fPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65f,
-                    context.getResources().getDisplayMetrics());
-            editTextMinimumWidth = Math.round(fPx);
+            editTextMinimumWidth = dpToPx(65f);
         }
         editText.setMinimumWidth(editTextMinimumWidth);
 
@@ -342,7 +335,7 @@ public class PlusMinusNum extends LinearLayout {
             if (v.getTag().equals("+")) {
                 // The maximum value judgment
                 if ((num * 10 + 1) / 10 > maximumNumValue) {//int: (++num > maximumNumValue)
-                    Toast.makeText(context,
+                    Toast.makeText(getContext(),
                             "! > maximum(" + maximumNumValue + ")",
                             Toast.LENGTH_SHORT).show();
                 } else {
@@ -356,7 +349,7 @@ public class PlusMinusNum extends LinearLayout {
             } else if (v.getTag().equals("-")) {
                 // The minimum value judgment
                 if ((num * 10 - 1) / 10 < minimumNumValue) {//int: (--num < minimumNumValue)
-                    Toast.makeText(context,
+                    Toast.makeText(getContext(),
                             "! < minimum(" + minimumNumValue + ")",
                             Toast.LENGTH_SHORT).show();
                 } else {
@@ -381,11 +374,11 @@ public class PlusMinusNum extends LinearLayout {
                 try {
                     float numI = Float.parseFloat(numString);
                     if (numI < minimumNumValue) {
-                        Toast.makeText(context,
+                        Toast.makeText(getContext(),
                                 "! < minimum(" + minimumNumValue + ")",
                                 Toast.LENGTH_SHORT).show();
                     } else if (numI > maximumNumValue) {
-                        Toast.makeText(context,
+                        Toast.makeText(getContext(),
                                 "! > maximum(" + maximumNumValue + ")",
                                 Toast.LENGTH_SHORT).show();
                     } else {
@@ -400,7 +393,7 @@ public class PlusMinusNum extends LinearLayout {
                     }
                 } catch (Exception e) {//NumberFormat
                     //illegal input
-                    Toast.makeText(context, "! illegal input", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "! illegal input", Toast.LENGTH_SHORT).show();
                     setText("");
                 }
             }
@@ -484,5 +477,10 @@ public class PlusMinusNum extends LinearLayout {
                     }
                 });
         }
+    }
+
+    // ------------------------------K------------------------------@Assist
+    public int dpToPx(float dp) {
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics()));
     }
 }
