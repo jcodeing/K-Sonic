@@ -19,5 +19,6 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.exoplayer:exoplayer:r1.5.8'
+    compile project(':library-exolib')
+    //-> https://github.com/jcodeing/ExoPlayer/tree/release-v2-sonic/library
 }
