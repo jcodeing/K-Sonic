@@ -1,1 +1,1 @@
-include ':demo', ':library-exo', ':library-presto'
+include ':demo', ':library-exo', ':library-presto', ':library-exolib'

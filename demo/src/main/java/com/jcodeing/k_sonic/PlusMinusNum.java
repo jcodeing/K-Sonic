@@ -52,8 +52,8 @@ public class PlusMinusNum extends LinearLayout {
     private LinearLayout centerLL;
 
     // =========@Config@=========
-    private String plusButtonText = "－";//"-"
-    private String minusButtonText = "＋";//"+"
+    private String plusButtonText = "＋";//"+"
+    private String minusButtonText = "－";//"-"
 
     private int buttonWidth;
     private int ediTextMinimumWidth;

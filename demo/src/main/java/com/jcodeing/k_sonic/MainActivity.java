@@ -37,8 +37,8 @@ import android.widget.TextView;
 
 import com.aocate.media.MediaPlayer;
 import com.jcodeing.k_sonic.explorer.FileExplorerActivity;
-import com.jcodeing.library_exo.ExoMediaPlayer;
 import com.jcodeing.library_exo.IMediaPlayer;
+import com.jcodeing.library_exo.KExoMediaPlayer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -147,7 +147,12 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
                 startActivity(new Intent(this, FileExplorerActivity.class));
                 break;
             case R.id.fab:
-                goPlay(audioPathTv.getText().toString());
+                if ("pause".equals(v.getTag()))
+                    goPlay(audioPathTv.getText().toString());
+                else if ("start".equals(v.getTag())) {
+                    mediaPlayer.pause();
+                    updateFabState(false);
+                }
                 break;
         }
     }
@@ -159,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
         mediaPlayer.setSonicRate(rate);
 
         mp.start();
+        updateFabStatePost(true);
     }
 
     @Override
@@ -170,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
     @Override
     public void onCompletion(IMediaPlayer mp) {
         showSnackbar("Play Completion");
+        updateFabStatePost(false);
     }
 
 
@@ -206,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
             mediaPlayer.stop();
 
         if (mediaEngine == 1) {
-            mediaPlayer = new ExoMediaPlayer(this);
+            mediaPlayer = new KExoMediaPlayer(this);
             if (mediaEngineTv != null)
                 mediaEngineTv.setText(getString(R.string.media_engine_exo));
         } else {//2
@@ -221,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
 
         // =========@save mediaEngine value@=========
         mSettings.setMediaEngine(mediaEngine);
+
+        updateFabState(false);
     }
 
 
@@ -249,35 +258,39 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
     public void goPlayDemo() {
 
         // =========@verify Demo File@=========
-        if (TextUtils.isEmpty(pathDemo))
-            pathDemo = getDir("demo", MODE_PRIVATE).getPath() + File.separator + "demo";
+        if (mediaEngine == 2) {
+            if (TextUtils.isEmpty(pathDemo) || "asset:///demo".equals(pathDemo))
+                pathDemo = getDir("demo", MODE_PRIVATE).getPath() + File.separator + "demo";
 
-        File fileDemo = new File(pathDemo);
-        if (!fileDemo.exists()) {
-            FileChannel inputChannel = null;
-            FileChannel outputChannel = null;
-            try {
-                //Be careful: getFileDescriptor() file size *2 > original file size problem
-                inputChannel = new FileInputStream(getAssets().openFd("demo").getFileDescriptor()).getChannel();
-                outputChannel = new FileOutputStream(fileDemo).getChannel();
-                outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-            } catch (Exception e) {//IO
-                e.printStackTrace();
-            } finally {
+            File fileDemo = new File(pathDemo);
+            if (!fileDemo.exists()) {
+                FileChannel inputChannel = null;
+                FileChannel outputChannel = null;
                 try {
-                    if (inputChannel != null)
-                        inputChannel.close();
-                    if (outputChannel != null)
-                        outputChannel.close();
+                    //Be careful: getFileDescriptor() file size *2 > original file size problem
+                    inputChannel = new FileInputStream(getAssets().openFd("demo").getFileDescriptor()).getChannel();
+                    outputChannel = new FileOutputStream(fileDemo).getChannel();
+                    outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
                 } catch (Exception e) {//IO
                     e.printStackTrace();
+                } finally {
+                    try {
+                        if (inputChannel != null)
+                            inputChannel.close();
+                        if (outputChannel != null)
+                            outputChannel.close();
+                    } catch (Exception e) {//IO
+                        e.printStackTrace();
+                    }
                 }
             }
+        } else {
+            pathDemo = "asset:///demo";
         }
-
         // =========@Play Demo File@=========
         try {
             mediaPlayer.setDataSource(pathDemo);
+            mediaPlayer.setLooping(true);
             mediaPlayer.prepareAsync();
         } catch (Exception e) {//IO
             e.printStackTrace();
@@ -286,11 +299,53 @@ public class MainActivity extends AppCompatActivity implements IMediaPlayer.OnPr
 
 
     // ------------------------------K------------------------------@Assist
+    private Snackbar snackbar;
+
     public void showSnackbar(@NonNull CharSequence text) {
-        if (fab != null && !TextUtils.isEmpty(text))
-            Snackbar.make(fab, text, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+        if (fab != null && !TextUtils.isEmpty(text)) {
+            if (snackbar == null)
+                snackbar = Snackbar.make(fab, text, Snackbar.LENGTH_LONG).setAction("Action", null);
+            else
+                snackbar.setText(text);
+
+            if (!snackbar.isShown())
+                snackbar.show();
+        }
     }
 
+    private void updateFabState(boolean isPlaying) {
+        if (isPlaying) {
+            fab.setTag("start");
+            fab.setImageResource(android.R.drawable.ic_media_pause);
+        } else {
+            fab.setTag("pause");
+            fab.setImageResource(android.R.drawable.ic_media_play);
+        }
+    }
+
+    private Runnable rTrue;
+    private Runnable rFalse;
+
+    private void updateFabStatePost(boolean isPlaying) {
+        if (isPlaying) {
+            if (rTrue == null)
+                rTrue = new Runnable() {
+                    @Override
+                    public void run() {
+                        updateFabState(true);
+                    }
+                };
+            fab.post(rTrue);
+        } else {
+            if (rFalse == null)
+                rFalse = new Runnable() {
+                    @Override
+                    public void run() {
+                        updateFabState(false);
+                    }
+                };
+            fab.post(rFalse);
+        }
+    }
 
 }
