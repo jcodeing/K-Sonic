@@ -135,7 +135,10 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
   }
 
   public float getSonicSpeed() {
-    return sonic.getSpeed();
+    if (sonic != null)
+      return sonic.getSpeed();
+    else
+      return speed;
   }
 
   public void setSonicPitch(float pitch) {
@@ -145,7 +148,10 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
   }
 
   public float getSonicPitch() {
-    return sonic.getPitch();
+    if (sonic != null)
+      return sonic.getPitch();
+    else
+      return pitch;
   }
 
   public void setSonicRate(float rate) {
@@ -155,7 +161,10 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
   }
 
   public float getSonicRate() {
-    return sonic.getRate();
+    if (sonic != null)
+      return sonic.getRate();
+    else
+      return rate;
   }
 }
 

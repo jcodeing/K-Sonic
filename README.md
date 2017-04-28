@@ -8,7 +8,7 @@ Introduction
 	一个基于Sonic(声音处理算法)的,音频Speed,Pitch,Rate调节Demo
 	该Demo支持音频打开方式后直接可进行相关音频参数的调节,
 	或者手动选择本地音频,或者直接播放本Demo内置音频,
-	想要播放在线音频可手动修改源码音频Uri
+	要播放在线音频可手动修改源码音频Uri
 Features
 ========
     该Demo支持两种媒体引擎,都支持音频的变速功能.
@@ -22,31 +22,29 @@ Features
 Usage
 =====
     直接引用K-Sonic项目中的library
-    没必要引用两个
-    你可以根据自己的需求进行选择
-    library-exo: 处了是在java层进行音频变速外,其他音频播放和处理等一些操作,我还没有进行测试...
-    library-presto: 如果没什么特殊情况,还是建议用这个的,兼容方面我已经做了很多完善,而且也是直接调用ndk,C算法相对效率会有点优势...
+    library-exo: minSdkVer:JELLY_BEAN(16), SDK_INT<23 构建SonicMediaCodecAudioRenderer 实现<23兼容加速
+    library-presto: minSdkVer:GINGERBREAD(9), MediaExtractor MediaCodec Sonic 实现加速播放
 License
 =======
-    MIT License
+	MIT License
 
-    Copyright (c) 2016 Jcodeing <jcodeing@gmail.com>
+	Copyright (c) 2017 K Sun <jcodeing@gmail.com>
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 

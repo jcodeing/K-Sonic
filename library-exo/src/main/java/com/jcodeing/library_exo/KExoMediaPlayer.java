@@ -155,7 +155,7 @@ public class KExoMediaPlayer extends AbstractMediaPlayer {
     public void start() throws IllegalStateException {
         if (player != null) {
             if (player.getPlaybackState() == ExoPlayer.STATE_ENDED)
-                player.seekTo(0);
+                seekTo(0);
             else
                 player.setPlayWhenReady(true);
         }
@@ -282,7 +282,7 @@ public class KExoMediaPlayer extends AbstractMediaPlayer {
         // do nothing
     }
 
-    boolean looping;
+    private boolean looping;
 
     @Override
     public void setLooping(boolean looping) {
@@ -391,8 +391,8 @@ public class KExoMediaPlayer extends AbstractMediaPlayer {
                 case ExoPlayer.STATE_READY:
                     break;
                 case ExoPlayer.STATE_ENDED:
-                    if (isLooping())
-                        start();
+                    if (isLooping() && player != null)
+                        player.seekTo(0);
                     else
                         notifyOnCompletion();
                     break;
