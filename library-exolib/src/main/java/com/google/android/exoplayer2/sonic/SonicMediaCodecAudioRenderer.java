@@ -51,6 +51,7 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
   // =========@Buffer
   private byte[] sonicBuffer;
   private int bufferIndex;
+  private ByteBuffer bufferSub;
 
   public SonicMediaCodecAudioRenderer(MediaCodecSelector mediaCodecSelector,
       DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
@@ -94,12 +95,23 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
         sonicProcessingSize = sonic.readBytesFromStream(sonicBuffer, sonicBuffer.length);
 
         // =========@Put the sonic processing data
-        buffer.position(position);
-        buffer.limit(position + sonicProcessingSize);
-        buffer.put(sonicBuffer, 0, sonicProcessingSize);
-        buffer.position(position);
-      }
+        if (!buffer.isReadOnly()) {
+          buffer.position(position);
+          buffer.limit(position + sonicProcessingSize);
+          buffer.put(sonicBuffer, 0, sonicProcessingSize);
+          buffer.position(position);
+        } else {//Use bufferSub replace buffer
+          if (bufferSub == null || bufferSub.capacity() != sonicBuffer.length)
+            bufferSub = ByteBuffer.wrap(sonicBuffer, 0, 0);
+          bufferSub.position(0);
+          bufferSub.limit(sonicProcessingSize);
+        }
+      } else if (bufferSub != null)
+        bufferSub = null;
     }
+    if (bufferSub != null && buffer.isReadOnly())
+      buffer = bufferSub;
+
     return super.processOutputBuffer(positionUs, elapsedRealtimeUs, codec, buffer, bufferIndex, bufferFlags, bufferPresentationTimeUs, shouldSkip);
   }
 
@@ -118,7 +130,7 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
     if (sonic != null) {
       if (sonicBuffer == null) {
         if (4096 >= bufferSize)
-          sonicBuffer = new byte[4096];
+          sonicBuffer = new byte[4096];//AAC 1024*2(16BIT)*2(stereo) 4096Byte
         else
           sonicBuffer = new byte[bufferSize];
       } else if (sonicBuffer.length < bufferSize) {
