@@ -19,6 +19,42 @@ Features
     含有一个PlusMinusNum自定义控件
     支持数字的累加/递减(float/int:需要自己再修改)
     支持长按连续累加/递减.....
+CoreCode
+=====
+    protected boolean processOutputBuffer(long positionUs, long elapsedRealtimeUs, MediaCodec codec, ByteBuffer buffer, int bufferIndex, int bufferFlags, long bufferPresentationTimeUs, boolean shouldSkip) throws ExoPlaybackException {
+        if (bufferIndex != this.bufferIndex) {
+          this.bufferIndex = bufferIndex;
+          if ((speed != 1.0f || pitch != 1.0f || rate != 1.0f) && initSonic(buffer.remaining())) {
+            // =========@Sonic@=========
+            int sonicProcessingSize;
+            int position = buffer.position();
+
+            // =========@Get the data and processing
+            sonicProcessingSize = buffer.remaining();
+            buffer.get(sonicBuffer, 0, sonicProcessingSize);
+            sonic.writeBytesToStream(sonicBuffer, sonicProcessingSize);
+            sonicProcessingSize = sonic.readBytesFromStream(sonicBuffer, sonicBuffer.length);
+
+            // =========@Put the sonic processing data
+            if (!buffer.isReadOnly()) {
+              buffer.position(position);
+              buffer.limit(position + sonicProcessingSize);
+              buffer.put(sonicBuffer, 0, sonicProcessingSize);
+              buffer.position(position);
+            } else {//Use bufferSub replace buffer
+              if (bufferSub == null || bufferSub.capacity() != sonicBuffer.length)
+                bufferSub = ByteBuffer.wrap(sonicBuffer, 0, 0);
+              bufferSub.position(0);
+              bufferSub.limit(sonicProcessingSize);
+            }
+          } else if (bufferSub != null)
+            bufferSub = null;
+        }
+        if (bufferSub != null && buffer.isReadOnly())
+          buffer = bufferSub;
+
+        return super.processOutputBuffer(positionUs, elapsedRealtimeUs, codec, buffer, bufferIndex, bufferFlags, bufferPresentationTimeUs, shouldSkip);
+    }
 Usage
 =====
     直接引用K-Sonic项目中的library
